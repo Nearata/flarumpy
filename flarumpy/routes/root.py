@@ -5,10 +5,8 @@ from httpx import post as httpx_post
 
 
 class RouteRoot:
-    def __init__(self, url: str, master_key: Optional[str] = None) -> None:
+    def __init__(self, url: str) -> None:
         self.url = url
-        self.master_key = master_key
-        self.access_token = None
 
     def show(self) -> tuple[int, dict[Any, Any]]:
         """
@@ -46,27 +44,26 @@ class RouteRoot:
         r = httpx_post(f"{self.url}/token", json=payload)
         return (r.status_code, r.json())
 
-    def forgot(self, email: str, user_id: int) -> tuple[int, dict[Any, Any]]:
+    def forgot(
+        self, token: str, email: str, user_id: int
+    ) -> tuple[int, dict[Any, Any]]:
         """
         Send forgot password email.
 
         **Parameters:**
 
+        * **token** - Flarum API key or user access token.
         * **email** - Email of the account you want to request a password reset.
 
         **Returns:**
 
         * **tuple** - Status code, Response
-
-        Requires master key or access token
         """
         payload = {"email": email}
 
         r = httpx_post(
             f"{self.url}/forgot",
             json=payload,
-            headers={
-                "Authorization": f"Token {self.access_token or self.master_key}; userId={user_id}"
-            },
+            headers={"Authorization": f"Token {token}; userId={user_id}"},
         )
         return (r.status_code, r.json())

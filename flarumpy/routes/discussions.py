@@ -7,15 +7,16 @@ from httpx import post as httpx_post
 
 
 class DiscussionsRoute:
-    def __init__(self, url: str, master_key: Optional[str] = None) -> None:
+    def __init__(self, url: str) -> None:
         self.url = f"{url}/discussions"
-        self.master_key = master_key
 
-    def __get_authorization_header(self, user_id: int) -> dict[Any, Any]:
+    def __get_authorization_header(
+        self, master_key: str, user_id: int
+    ) -> dict[Any, Any]:
         """
         Builds authorization header
         """
-        return {"Authorization": f"Token {self.master_key}; userId={user_id}"}
+        return {"Authorization": f"Token {master_key}; userId={user_id}"}
 
     def index(self) -> tuple[int, dict[Any, Any]]:
         """
@@ -30,6 +31,7 @@ class DiscussionsRoute:
 
     def create(
         self,
+        master_key: str,
         title: str,
         content: str,
         tags: list[int] = [],
@@ -40,6 +42,7 @@ class DiscussionsRoute:
 
         **Parameters:**
 
+        * **master_key** - Flarum API key.
         * **user_id** - ID of the user to impersonate.
         * **title** - Title of the discussion.
         * **content** - Content of the discussion.
@@ -48,8 +51,6 @@ class DiscussionsRoute:
         **Returns:**
 
         * **tuple** - Status code, Response
-
-        * Requires master key
         """
         discussion_tags = []
         for i in tags:
@@ -67,7 +68,9 @@ class DiscussionsRoute:
         }
 
         r = httpx_post(
-            self.url, headers=self.__get_authorization_header(user_id), json=json
+            self.url,
+            headers=self.__get_authorization_header(master_key, user_id),
+            json=json,
         )
         return (r.status_code, r.json())
 
@@ -77,7 +80,7 @@ class DiscussionsRoute:
 
         **Parameters:**
 
-        * **discussion_id** - ID of the discussion to fetch
+        * **discussion_id** - ID of the discussion to fetch.
 
         **Returns:**
 
@@ -88,6 +91,7 @@ class DiscussionsRoute:
 
     def update(
         self,
+        master_key: str,
         discussion_id: int,
         user_id: int = 1,
         title: Optional[str] = None,
@@ -101,19 +105,18 @@ class DiscussionsRoute:
 
         **Parameters:**
 
-        * **discussion_id** - ID of the discussion to update
-        * **user_id** - ID of the user to impersonate
-        * **title** - New title of the discussion
-        * **is_hidden** - Hide or not the discussion
-        * **is_locked** - Lock or not the discussion
-        * **is_sticky** - Stick or not the discussion
-        * **tags** - New list of tags for the discussion
+        * **master_key** - Flarum API key.
+        * **discussion_id** - ID of the discussion to update.
+        * **user_id** - ID of the user to impersonate.
+        * **title** - New title of the discussion.
+        * **is_hidden** - Hide or not the discussion.
+        * **is_locked** - Lock or not the discussion.
+        * **is_sticky** - Stick or not the discussion.
+        * **tags** - New list of tags for the discussion.
 
         **Returns:**
 
         * **tuple** - Status code, response
-
-        * Requires master key
         """
         discussion_tags = []
         if tags:
@@ -134,32 +137,31 @@ class DiscussionsRoute:
 
         r = httpx_patch(
             f"{self.url}/{discussion_id}",
-            headers=self.__get_authorization_header(user_id),
+            headers=self.__get_authorization_header(master_key, user_id),
             json=json,
         )
 
         return (r.status_code, r.json())
 
     def delete(
-        self, discussion_id: int, user_id: int = 1
+        self, master_key: str, discussion_id: int, user_id: int = 1
     ) -> tuple[int, dict[Any, Any]]:
         """
         Delete a discussion.
 
         **Parameters:**
 
-        * **discussion_id** - ID of the discussion to delete
-        * **user_id** - ID of the user to impersonate
+        * **master_key** - Flarum API key.
+        * **discussion_id** - ID of the discussion to delete.
+        * **user_id** - ID of the user to impersonate.
 
         **Returns:**
 
         * **tuple** - Status code, response
-
-        * Requires master key
         """
         r = httpx_delete(
             f"{self.url}/{discussion_id}",
-            headers=self.__get_authorization_header(user_id),
+            headers=self.__get_authorization_header(master_key, user_id),
         )
 
         return (r.status_code, r.json())
