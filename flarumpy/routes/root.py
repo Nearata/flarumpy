@@ -4,9 +4,9 @@ from httpx import Client
 
 
 class RouteRoot:
-    def __init__(self, url: str, session: type[Client]) -> None:
+    def __init__(self, url: str, session: Client) -> None:
         self.url = url
-        self.session = session()
+        self.session = session
 
     def show(self) -> tuple[int, dict[Any, Any]]:
         """

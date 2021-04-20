@@ -19,16 +19,14 @@ class Flarum:
     def __init__(
         self,
         url: str = "https://discuss.flarum.org/api",
-        master_key: Optional[str] = None,
-        session: type[Client] = Client,
+        session: Optional[Client] = None,
     ) -> None:
         parse = urlparse(url)
         if not parse.scheme.startswith(("http", "https")):
             raise ValueError("url parameter should start with http or https.")
 
         self.url = url
-        self.master_key = master_key
-        self.session = session
+        self.session = session if session else Client()
 
     def discussions(self) -> DiscussionsRoute:
         """

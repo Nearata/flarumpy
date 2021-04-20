@@ -4,9 +4,9 @@ from httpx import Client
 
 
 class DiscussionsRoute:
-    def __init__(self, url: str, session: type[Client]) -> None:
+    def __init__(self, url: str, session: Client) -> None:
         self.url = f"{url}/discussions"
-        self.session = session()
+        self.session = session
 
     def __get_authorization_header(
         self, master_key: str, user_id: int
