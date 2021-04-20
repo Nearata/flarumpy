@@ -2,19 +2,13 @@ from typing import Any, Optional
 
 from httpx import Client
 
+from ..utils import authorization_header
+
 
 class DiscussionsRoute:
     def __init__(self, url: str, session: Client) -> None:
         self.url = f"{url}/discussions"
         self.session = session
-
-    def __get_authorization_header(
-        self, master_key: str, user_id: int
-    ) -> dict[Any, Any]:
-        """
-        Builds authorization header
-        """
-        return {"Authorization": f"Token {master_key}; userId={user_id}"}
 
     def index(self) -> tuple[int, dict[Any, Any]]:
         """
@@ -67,7 +61,7 @@ class DiscussionsRoute:
 
         r = self.session.post(
             self.url,
-            headers=self.__get_authorization_header(master_key, user_id),
+            headers=authorization_header(master_key, user_id),
             json=json,
         )
         return (r.status_code, r.json())
@@ -135,7 +129,7 @@ class DiscussionsRoute:
 
         r = self.session.patch(
             f"{self.url}/{discussion_id}",
-            headers=self.__get_authorization_header(master_key, user_id),
+            headers=authorization_header(master_key, user_id),
             json=json,
         )
 
@@ -159,7 +153,7 @@ class DiscussionsRoute:
         """
         r = self.session.delete(
             f"{self.url}/{discussion_id}",
-            headers=self.__get_authorization_header(master_key, user_id),
+            headers=authorization_header(master_key, user_id),
         )
 
         return (r.status_code, r.json())

@@ -2,6 +2,8 @@ from typing import Any
 
 from httpx import Client
 
+from ..utils import authorization_header
+
 
 class RouteRoot:
     def __init__(self, url: str, session: Client) -> None:
@@ -64,6 +66,6 @@ class RouteRoot:
         r = self.session.post(
             f"{self.url}/forgot",
             json=payload,
-            headers={"Authorization": f"Token {token}; userId={user_id}"},
+            headers=authorization_header(token, user_id),
         )
         return (r.status_code, r.json())
