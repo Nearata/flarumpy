@@ -1,4 +1,4 @@
-from typing import Any, Optional
+from typing import Optional
 from urllib.parse import urlparse
 
 from httpx import Client
@@ -20,7 +20,7 @@ class Flarum:
         self,
         url: str = "https://discuss.flarum.org/api",
         master_key: Optional[str] = None,
-        session: Client = Client(),
+        session: type[Client] = Client,
     ) -> None:
         parse = urlparse(url)
         if not parse.scheme.startswith(("http", "https")):
@@ -34,12 +34,12 @@ class Flarum:
         """
         Discussions API Route.
         """
-        i = DiscussionsRoute(self.url)
+        i = DiscussionsRoute(self.url, self.session)
         return i
 
     def root(self) -> RouteRoot:
         """
         Root API Route.
         """
-        i = RouteRoot(self.url)
+        i = RouteRoot(self.url, self.session)
         return i

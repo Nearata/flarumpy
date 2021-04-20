@@ -1,12 +1,12 @@
-from typing import Any, Optional
+from typing import Any
 
-from httpx import get as httpx_get
-from httpx import post as httpx_post
+from httpx import Client
 
 
 class RouteRoot:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, session: type[Client]) -> None:
         self.url = url
+        self.session = session()
 
     def show(self) -> tuple[int, dict[Any, Any]]:
         """
@@ -16,7 +16,7 @@ class RouteRoot:
 
         * **tuple** - Status code, Response
         """
-        r = httpx_get(self.url)
+        r = self.session.get(self.url)
         return (r.status_code, r.json())
 
     def token(
@@ -41,7 +41,7 @@ class RouteRoot:
             "remember": remember,
         }
 
-        r = httpx_post(f"{self.url}/token", json=payload)
+        r = self.session.post(f"{self.url}/token", json=payload)
         return (r.status_code, r.json())
 
     def forgot(
@@ -61,7 +61,7 @@ class RouteRoot:
         """
         payload = {"email": email}
 
-        r = httpx_post(
+        r = self.session.post(
             f"{self.url}/forgot",
             json=payload,
             headers={"Authorization": f"Token {token}; userId={user_id}"},

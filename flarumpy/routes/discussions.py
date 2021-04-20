@@ -1,14 +1,12 @@
 from typing import Any, Optional
 
-from httpx import delete as httpx_delete
-from httpx import get as httpx_get
-from httpx import patch as httpx_patch
-from httpx import post as httpx_post
+from httpx import Client
 
 
 class DiscussionsRoute:
-    def __init__(self, url: str) -> None:
+    def __init__(self, url: str, session: type[Client]) -> None:
         self.url = f"{url}/discussions"
+        self.session = session()
 
     def __get_authorization_header(
         self, master_key: str, user_id: int
@@ -26,7 +24,7 @@ class DiscussionsRoute:
 
         * **tuple** - Status code, Response
         """
-        r = httpx_get(self.url)
+        r = self.session.get(self.url)
         return (r.status_code, r.json())
 
     def create(
@@ -67,7 +65,7 @@ class DiscussionsRoute:
             }
         }
 
-        r = httpx_post(
+        r = self.session.post(
             self.url,
             headers=self.__get_authorization_header(master_key, user_id),
             json=json,
@@ -86,7 +84,7 @@ class DiscussionsRoute:
 
         * **tuple** - Status code, response
         """
-        r = httpx_get(f"{self.url}/{discussion_id}")
+        r = self.session.get(f"{self.url}/{discussion_id}")
         return (r.status_code, r.json())
 
     def update(
@@ -135,7 +133,7 @@ class DiscussionsRoute:
             }
         }
 
-        r = httpx_patch(
+        r = self.session.patch(
             f"{self.url}/{discussion_id}",
             headers=self.__get_authorization_header(master_key, user_id),
             json=json,
@@ -159,7 +157,7 @@ class DiscussionsRoute:
 
         * **tuple** - Status code, response
         """
-        r = httpx_delete(
+        r = self.session.delete(
             f"{self.url}/{discussion_id}",
             headers=self.__get_authorization_header(master_key, user_id),
         )
