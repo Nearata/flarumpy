@@ -26,7 +26,7 @@ class Flarum:
             raise ValueError("url parameter should start with http or https.")
 
         self.url = url
-        self.session = session if session else Client()
+        self.session = session or Client()
 
     def discussions(self) -> DiscussionsRoute:
         """
