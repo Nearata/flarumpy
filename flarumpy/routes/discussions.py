@@ -1,4 +1,4 @@
-from typing import Any, Optional, Union
+from typing import Any, Optional
 
 from httpx import delete as httpx_delete
 from httpx import get as httpx_get
@@ -8,7 +8,7 @@ from httpx import post as httpx_post
 
 class DiscussionsRoute:
     def __init__(self, url: str, master_key: Optional[str] = None) -> None:
-        self.url = f"{url}/api/discussions"
+        self.url = f"{url}/discussions"
         self.master_key = master_key
 
     def __get_authorization_header(self, user_id: int) -> dict[Any, Any]:
@@ -17,13 +17,16 @@ class DiscussionsRoute:
         """
         return {"Authorization": f"Token {self.master_key}; userId={user_id}"}
 
-    def index(self) -> dict[Any, Any]:
+    def index(self) -> tuple[int, dict[Any, Any]]:
         """
         List discussions.
+
+        **Returns:**
+
+        * **tuple** - Status code, Response
         """
         r = httpx_get(self.url)
-        response: dict[Any, Any] = r.json()
-        return response
+        return (r.status_code, r.json())
 
     def create(
         self,
@@ -66,9 +69,7 @@ class DiscussionsRoute:
         r = httpx_post(
             self.url, headers=self.__get_authorization_header(user_id), json=json
         )
-        response: dict[Any, Any] = r.json()
-
-        return (r.status_code, response)
+        return (r.status_code, r.json())
 
     def show(self, discussion_id: int) -> tuple[int, dict[Any, Any]]:
         """
@@ -83,8 +84,7 @@ class DiscussionsRoute:
         * **tuple** - Status code, response
         """
         r = httpx_get(f"{self.url}/{discussion_id}")
-        response: dict[Any, Any] = r.json()
-        return (r.status_code, response)
+        return (r.status_code, r.json())
 
     def update(
         self,
@@ -161,6 +161,5 @@ class DiscussionsRoute:
             f"{self.url}/{discussion_id}",
             headers=self.__get_authorization_header(user_id),
         )
-        response: dict[Any, Any] = r.json()
 
-        return (r.status_code, response)
+        return (r.status_code, r.json())
