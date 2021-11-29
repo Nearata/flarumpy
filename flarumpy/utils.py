@@ -1,7 +1,7 @@
-from typing import Any
+from typing import Optional
 
 
-def authorization_header(token: str, user_id: int) -> dict[Any, Any]:
+def authorization_header(token: str, user_id: Optional[int] = None) -> dict[str, str]:
     """
     Builds authorization header.
     """

@@ -5,6 +5,7 @@ from httpx import Client
 
 from .routes.discussions import DiscussionsRoute
 from .routes.root import RouteRoot
+from .routes.users import UsersRoute
 
 
 class Flarum:
@@ -26,7 +27,7 @@ class Flarum:
             raise ValueError("url parameter should start with http or https.")
 
         self.url = url
-        self.session = session or Client()
+        self.session = session or Client(verify=False)
 
     def discussions(self) -> DiscussionsRoute:
         """
@@ -40,4 +41,11 @@ class Flarum:
         Root API Route.
         """
         i = RouteRoot(self.url, self.session)
+        return i
+
+    def users(self) -> UsersRoute:
+        """
+        Users API Route.
+        """
+        i = UsersRoute(self.url, self.session)
         return i
